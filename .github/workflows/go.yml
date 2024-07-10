@@ -37,4 +37,4 @@ jobs:
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh'
         scp -i ~/.ssh/id_rsa url-shortener ubuntu@149.130.183.133:/home/ubuntu/url-shortener
         echo "archivos enviados"
-        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 '~/url-shortener'
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 '~/url-shortener &'

@@ -15,16 +15,14 @@ vm_pubkey=$(oci secrets secret-bundle get --secret-id $secret_id --query 'data."
 echo "$vm_pubkey" > temp_vm_pub.key
 
 oci compute instance launch \
-  --availability-domain DriT:SA-BOGOTA-1-AD-1 \
-  --compartment-id $cmp_id \
-  --subnet-id $subnet_id --nsg-ids "$nsg_ids" \
-  --assign-public-ip true \
-  --display-name "$vm_name" \
-  --shape VM.Standard3.Flex \
-  --shape-config '{ "baselineOcpuUtilization": "BASELINE_1_8", "memoryInGBs":4, "ocpus": 1 }' \
-  --image-id "ocid1.image.oc1.sa-bogota-1.aaaaaaaa34rokd6rvzhzi3bfn5nil5utdqptxwbincppslbagperditew7da" \
-  --ssh-authorized-keys-file temp_vm_pub.key\
-  --user-data-file cloud-init.yaml \
-  --wait-for-state RUNNING --wait-for-state TERMINATED --wait-for-state STOPPED --wait-interval-seconds 10  
+    --compartment-id $cmp_id \
+    --availability-domain "Uocm:SA-BOGOTA-1-AD-1" \
+    --shape "VM.Standard2.1" \
+    --display-name $vm_name \
+    --subnet-id $subnet_id \
+    --assign-public-ip true \
+    --ssh-authorized-keys-file temp_vm_pub.key \
+    --metadata '{"user_data": "#!/bin/bash\n echo \"export LINKER_HOST=http://localhost:8080\" >> /home/opc/.bashrc"}' \
+    --network-security-group-ids $nsg_ids
 
   rm temp_vm_pub.key

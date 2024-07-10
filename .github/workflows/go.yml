@@ -39,5 +39,5 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H 149.130.183.133 >> ~/.ssh/known_hosts
         echo "host agregado"
-        scp -i ~/.ssh/id_rsa front.zip opc@149.130.183.133:/home/ubuntu/linker/app-jp.zip
+        scp -i ~/.ssh/id_rsa front.zip ubuntu@149.130.183.133:/home/ubuntu/linker/app-jp.zip
         echo "archivo enviado"

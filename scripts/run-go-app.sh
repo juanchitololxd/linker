@@ -9,5 +9,5 @@ else
     echo "No se encontro ningun proceso en el puerto 8080."
 fi
 
-./url-shortener &
+~/url-shortener &
 echo "El servicio url-shortener se ha iniciado en segundo plano."

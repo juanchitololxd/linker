@@ -26,9 +26,8 @@ jobs:
         mkdir -p ~/.ssh
         echo "carperta creada"
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        echo "llave creada"
+        echo "${{ secrets.SSH_PRIVATE_KEY }}"
         chmod 600 ~/.ssh/id_rsa
-        echo "permisos cambiados"
         ssh-keyscan -H 149.130.163.38 >> ~/.ssh/known_hosts
         echo "host agregado"
         scp -i ~/.ssh/id_rsa front.zip opc@149.130.163.38:/home/opc/app-jp.zip

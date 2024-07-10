@@ -33,10 +33,8 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY_JP }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H 149.130.183.133 >> ~/.ssh/known_hosts
-        scp -i ~/.ssh/id_rsa ./scripts/run-go-app.sh ubuntu@149.130.183.133:/home/ubuntu/scripts/run-go-app.sh
+        scp -i ~/.ssh/id_rsa ./scripts/kill-current-process.sh ubuntu@149.130.183.133:~/scripts/kill-current-process.sh
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh'
         scp -i ~/.ssh/id_rsa url-shortener ubuntu@149.130.183.133:/home/ubuntu/url-shortener
         echo "archivos enviados"
-
-    - name: Launch app
-      run: |
-        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 '~/scripts/run-go-app.sh'
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 '~/url-shortener'

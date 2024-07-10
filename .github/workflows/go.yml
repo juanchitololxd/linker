@@ -36,3 +36,7 @@ jobs:
         scp -i ~/.ssh/id_rsa ./scripts/run-go-app.sh ubuntu@149.130.183.133:/home/ubuntu/scripts/run-go-app.sh
         scp -i ~/.ssh/id_rsa url-shortener ubuntu@149.130.183.133:/home/ubuntu/url-shortener
         echo "archivos enviados"
+
+    - name: Launch app
+      run: |
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 '~/scripts/run-go-app.sh'

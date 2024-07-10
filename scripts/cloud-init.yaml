@@ -24,4 +24,4 @@ write_files:
       WantedBy=multi-user.target
     path: /etc/systemd/system/linker.service
 runcmd:
-  - systemctl enable linker.service
+  - mkdir -p /home/ubuntu/scripts

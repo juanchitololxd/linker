@@ -5,7 +5,7 @@ name: Go
 
 on:
   push:
-    branches: [ "main", "features/pipeline", "feature/unit-test" ]
+    branches: [ "main", "features/pipeline", "feature/unit-tests" ]
   pull_request:
     branches: [ "main" ]
 

@@ -5,8 +5,6 @@ name: Go
 
 on:
   push:
-    branches: [ "features/pipeline", "feature/unit-tests" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:

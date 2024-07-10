@@ -5,7 +5,7 @@ name: Go
 
 on:
   push:
-    branches: [ "main", "features/pipeline", "feature/unit-tests" ]
+    branches: [ "features/pipeline", "feature/unit-tests" ]
   pull_request:
     branches: [ "main" ]
 
@@ -27,17 +27,14 @@ jobs:
     - name: Run Tests
       run: go test -v ./...
 
-    - name: Compress files
-      run: zip -r front.zip .
-
     - name: Transfer files via SCP
       run: |
         mkdir -p ~/.ssh
-        echo "carperta creada"
         echo "${{ secrets.SSH_PRIVATE_KEY_JP }}" > ~/.ssh/id_rsa
-        echo "${{ secrets.SSH_PRIVATE_KEY_JP }}"
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H 149.130.183.133 >> ~/.ssh/known_hosts
-        echo "host agregado"
-        scp -i ~/.ssh/id_rsa front.zip ubuntu@149.130.183.133:/home/ubuntu/linker.zip
-        echo "archivo enviado"
+        scp -i ~/.ssh/id_rsa ./scripts/kill-current-process.sh ubuntu@149.130.183.133:~/scripts/kill-current-process.sh
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh'
+        scp -i ~/.ssh/id_rsa url-shortener ubuntu@149.130.183.133:/home/ubuntu/url-shortener
+        echo "archivos enviados"
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'nohup ~/url-shortener > ~/url-shortener.log 2>&1 &'

@@ -1,0 +1,26 @@
+name: Delete Codespace
+
+on:
+  delete:
+    branches:
+      - '*'
+
+jobs:
+  delete-codespace:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete Codespace
+        run: |
+          # Obtener la lista de Codespaces para el repositorio y la rama eliminada
+          codespaces=$(curl -s -H "Authorization: token ${{ secrets.CODESPACES_GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/codespaces | jq -r '.codespaces[] | select(.git_status.ref == "${{ github.ref_name }}") | .name')
+
+          # Iterar sobre la lista de Codespaces y eliminarlos
+          for codespace in $codespaces; do
+            curl -X DELETE \
+            -H "Authorization: token ${{ secrets.CODESPACES_GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/user/codespaces/$codespace
+          done

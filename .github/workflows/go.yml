@@ -20,7 +20,7 @@ jobs:
         go-version: '1.19.4'
 
     - name: Build
-      run: go build -v -o url-shortener ./cmd/api/main.go
+      run: go build -v ./cmd/api/main.go
 
     - name: Run Tests
       run: go test -v ./...
@@ -33,6 +33,6 @@ jobs:
         ssh-keyscan -H 149.130.183.133 >> ~/.ssh/known_hosts
         scp -i ~/.ssh/id_rsa ./scripts/kill-current-process.sh ubuntu@149.130.183.133:~/scripts/kill-current-process.sh
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh'
-        scp -i ~/.ssh/id_rsa url-shortener ubuntu@149.130.183.133:/home/ubuntu/url-shortener
+        scp -i ~/.ssh/id_rsa main ubuntu@149.130.183.133:/home/ubuntu/url-shortener
         echo "archivos enviados"
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'nohup ~/url-shortener > ~/url-shortener.log 2>&1 &'

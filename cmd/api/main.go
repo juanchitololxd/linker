@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"log"
 	"net/http"
 	"url-shortener/cmd/api/application"
@@ -8,6 +9,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+//go:embed static
+var staticFiles embed.FS
 
 func main() {
 	// Inicializar la aplicación
@@ -43,7 +47,18 @@ func main() {
 	}
 
 	// Configurar las rutas
-	http.Handle("/", instrumentedHandler("/", http.FileServer(http.Dir("./cmd/api/static"))))
+	// Sirve archivos estáticos desde la raíz
+	fs := http.FileServer(http.FS(staticFiles))
+
+	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			http.Redirect(w, r, "/static/index.html", http.StatusMovedPermanently)
+			return
+		}
+
+		fs.ServeHTTP(w, r)
+	}))
+
 	http.Handle("/shorten", instrumentedHandler("/shorten", http.HandlerFunc(application.URLHandler.ShortenURLHandler)))
 	http.Handle("/s/", instrumentedHandler("/s/", http.HandlerFunc(application.URLHandler.RedirectHandler)))
 

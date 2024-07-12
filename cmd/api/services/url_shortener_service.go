@@ -2,6 +2,7 @@ package services
 
 import (
 	"math/rand"
+	"os"
 	"sync"
 	"url-shortener/cmd/api/domain"
 )
@@ -41,6 +42,10 @@ func (s *urlShortenerService) GetOriginalURL(shortURL string) (string, bool) {
 }
 
 func (s *urlShortenerService) GetHistory() []domain.URLMapping {
+	if os.Getenv("FEATURE_FLAG") == "0" {
+		return nil
+	}
+
 	urlMappings := make([]domain.URLMapping, 0, len(s.urlMap))
 
 	for shortURL, originalURL := range s.urlMap {

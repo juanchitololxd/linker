@@ -6,23 +6,49 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Linker 1</title>
+    <style>
+        #urlTableContainer {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60%;
+        }
+        .content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .table-container {
+            display: none;
+        }
+        .table-container.visible {
+            display: block;
+        }
+    </style>
 </head>
-
 <body>
     <div class="d-flex justify-content-center align-items-center vh-100">
-        <main>
-            <header class="d-flex flex-column align-items-center">
-                <h1 style="font-family: cursive;">Linker 1</h1>
-                <img src="images/Logo.jpeg" alt="logo shorter" style="width: 60%;">
-            </header>
-            <div class="d-flex flex-column align-items-center">
-                <input type="text" id="urlInput" placeholder="url" class="form-control my-2 w-50 w-md-50 me-md-2">
-                <button id="btn-short" class="btn btn-primary my-2" type="submit">shorten</button>
+        <main class="content-wrapper">
+            <div class="main-content">
+                <header class="d-flex flex-column align-items-center">
+                    <h1 style="font-family: cursive;">Linker 1</h1>
+                    <img id="logoImage" src="images/Logo.jpeg" alt="logo shorter" style="width: 100%;">
+                </header>
+                <div class="d-flex flex-column align-items-center mt-3 w-100">
+                    <input type="text" id="urlInput" placeholder="url" class="form-control my-2 w-100">
+                    <button id="btn-short" class="btn btn-primary my-2" type="submit">shorten</button>
+                </div>
+                <div class="d-flex flex-column align-items-center mt-3">
+                    <div id="shortenedLink" style="display: none;">Shortened Link: <span id="linkText"></span></div>
+                    <button id="btnCopy" class="btn" style="display: none; background-color: #4CAF50; color: white;">Copy</button>
+                </div>
             </div>
-            <div class="d-flex flex-column align-items-center">
-                <div id="shortenedLink" style="display: none;">Shortened Link: <span id="linkText"></span></div>
-                <button id="btnCopy" class="btn" style="display: none; background-color: #4CAF50; color: white;">Copy</button>
-            </div>
+            <div id="urlTableContainer" class="table-container ms-3 flex-grow-1"></div>
         </main>
     </div>
     <script src="script.js"></script>

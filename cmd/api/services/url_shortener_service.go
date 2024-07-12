@@ -40,6 +40,19 @@ func (s *urlShortenerService) GetOriginalURL(shortURL string) (string, bool) {
 	return originalURL, ok
 }
 
+func (s *urlShortenerService) GetHistory() []domain.URLMapping {
+	urlMappings := make([]domain.URLMapping, 0, len(s.urlMap))
+
+	for shortURL, originalURL := range s.urlMap {
+		urlMappings = append(urlMappings, domain.URLMapping{
+			OriginalURL: originalURL,
+			ShortURL:    shortURL,
+		})
+	}
+
+	return urlMappings
+}
+
 func generateShortURL() string {
 	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 

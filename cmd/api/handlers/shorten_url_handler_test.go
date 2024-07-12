@@ -23,6 +23,17 @@ func (m *mockURLShortenerService) ShortenURL(originalURL string) domain.URLMappi
 	}
 }
 
+func (m *mockURLShortenerService) GetHistory() []domain.URLMapping {
+	history := []domain.URLMapping{}
+	for shortURL, originalURL := range m.urlMap {
+		history = append(history, domain.URLMapping{
+			OriginalURL: originalURL,
+			ShortURL:    "http://1.unli.ink/s/" + shortURL,
+		})
+	}
+	return history
+}
+
 func (m *mockURLShortenerService) GetOriginalURL(shortURL string) (string, bool) {
 	originalURL, ok := m.urlMap[shortURL]
 	return originalURL, ok

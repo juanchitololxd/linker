@@ -26,6 +26,7 @@ jobs:
         DB_PASSWD: ${{ secrets.DB_PASSWD }}
       run: |
         echo ${{ secrets.ENV_DEPLOY }}
+        chmod +x ./scripts/setup-project-linux.sh
         ./scripts/setup-project-linux.sh ${{ secrets.ENV_DEPLOY }}
         
         if [ "$GO_ENV" = "dev" ]; then

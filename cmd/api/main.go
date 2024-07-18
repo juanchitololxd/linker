@@ -62,6 +62,9 @@ func main() {
 	http.Handle("/shorten", instrumentedHandler("/shorten", http.HandlerFunc(application.URLHandler.ShortenURLHandler)))
 	http.Handle("/s/", instrumentedHandler("/s/", http.HandlerFunc(application.URLHandler.RedirectHandler)))
 
+	//Endpoint para retornar y actualizar la lista de url generadas
+	http.Handle("/urlHistory", instrumentedHandler("/urlHistory", http.HandlerFunc(application.URLHandler.GetHistory)))
+
 	// Endpoint para exponer las métricas
 	http.Handle("/metrics", promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 

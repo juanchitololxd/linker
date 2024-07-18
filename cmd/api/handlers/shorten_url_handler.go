@@ -53,3 +53,18 @@ func (h *shortenURLHandler) RedirectHandler(w http.ResponseWriter, r *http.Reque
 
 	http.Redirect(w, r, originalURL, http.StatusFound)
 }
+
+func (h *shortenURLHandler) GetHistory(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		log.Println("ERROR: Invalid request method")
+		return
+	}
+
+	urlMapping := h.service.GetHistory()
+
+	log.Print("INFO: History generated")
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(urlMapping)
+}

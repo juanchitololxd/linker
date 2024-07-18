@@ -32,6 +32,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 copyButton.style.display = ''; // Muestra el botón de copiar
             })
             .catch(error => console.error('There has been a problem with your fetch operation:', error));
+            fetch('/urlHistory')
+    .then(response => response.json())
+    .then(data => {
+        console.log(Array.isArray(data) && data.length > 0);
+        const tableContainer = document.getElementById('urlTableContainer');
+        const contentWrapper = document.querySelector('.content-wrapper');
+        const mainContent = document.querySelector('.main-content');
+        let table = tableContainer.querySelector('table');
+        let tbody;
+
+        // Crear la tabla solo si no existe
+        if (!table) {
+            table = document.createElement('table');
+            table.classList.add('table', 'table-bordered');
+            const thead = document.createElement('thead');
+            tbody = document.createElement('tbody');
+            const headerRow = document.createElement('tr');
+
+            headerRow.innerHTML = '<th>URL Original</th><th>URL Corta</th>';
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            tableContainer.appendChild(table);
+        } else {
+            // Obtener el tbody existente
+            tbody = table.querySelector('tbody');
+            // Limpiar el tbody existente
+            tbody.innerHTML = '';
+        }
+
+        if (Array.isArray(data) && data.length > 0) {
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${item.original_url}</td><td>${item.short_url}</td>`;
+                tbody.appendChild(row);
+            });
+            tableContainer.classList.add('visible');
+            mainContent.classList.remove('centered');
+        } else {
+            console.log('No URL history to display');
+            tableContainer.classList.remove('visible');
+            mainContent.classList.add('centered');
+        }
+    })
+    .catch(error => console.error('Error fetching URL history:', error));
+
     });
 
     copyButton.addEventListener('click', function() {

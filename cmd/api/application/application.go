@@ -3,6 +3,8 @@ package application
 import (
 	"url-shortener/cmd/api/handlers"
 	"url-shortener/cmd/api/services"
+	"github.com/joho/godotenv"
+	"log"
 )
 
 var (
@@ -12,6 +14,8 @@ var (
 
 func Initialize() {
 	// Init Services
+	godotenv.Load()
+	log.Println("Variables de entorno cargadas")
 	URLService = services.NewURLShortenerService()
 
 	// Init Handlers

@@ -19,10 +19,28 @@ jobs:
       with:
         go-version: '1.20'
 
+          - name: Setup environment variables
+            env:
+              FEATURE_FLAG: ${{ secrets.FEATURE_FLAG }}
+              DB_USERNAME: ${{ secrets.DB_USERNAME }}
+              DB_PASSWD: ${{ secrets.DB_PASSWD }}
+            run: |
+            echo ${{ secrets.ENV_DEPLOY }}
+            ./scripts/setup-project-linux.sh ${{ secrets.ENV_DEPLOY }}
+
+            if [ "$GO_ENV" = "dev" ]; then
+              echo "DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}" >> $GITHUB_ENV
+              echo "DB_PASSWD=${{ secrets.DEV_DB_PASSWD }}" >> $GITHUB_ENV
+            fi
+            
+            echo $DB_USERNAME
+            echo $DB_PASSWD
+            sed -i 's/{{DB_USERNAME}}/'"$DB_USERNAME"'/g' .env
+            sed -i 's/{{DB_PASSWD}}/'"$DB_PASSWD"'/g' .env
+
+
     - name: Build
       run: go build -v ./cmd/api
-      env:
-        FEATURE_FLAG: ${{ secrets.FEATURE_FLAG }}
 
     - name: Run Tests
       run: go test -v ./...

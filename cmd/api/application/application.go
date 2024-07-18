@@ -5,7 +5,6 @@ import (
 	"url-shortener/cmd/api/services"
 	"github.com/joho/godotenv"
 	"log"
-	"os"
 )
 
 var (

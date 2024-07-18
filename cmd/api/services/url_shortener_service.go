@@ -27,7 +27,7 @@ func (s *urlShortenerService) ShortenURL(originalURL string) domain.URLMapping {
 
 	return domain.URLMapping{
 		OriginalURL: originalURL,
-		ShortURL:    "http://localhost:8080/s/" + shortURL,
+		ShortURL:    "http://1.unli.ink/s/" + shortURL,
 	}
 }
 

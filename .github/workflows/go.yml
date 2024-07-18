@@ -51,10 +51,10 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY_JP }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ls -la
         ssh-keyscan -H 149.130.183.133 >> ~/.ssh/known_hosts
         scp -i ~/.ssh/id_rsa ./scripts/kill-current-process.sh ubuntu@149.130.183.133:~/scripts/kill-current-process.sh
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh'
         scp -i ~/.ssh/id_rsa api ubuntu@149.130.183.133:/home/ubuntu/url-shortener
+        scp -i ~/.ssh/id_rsa .env ubuntu@149.130.183.133:/home/ubuntu/.env
         echo "archivos enviados"
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'nohup ~/url-shortener > ~/url-shortener.log 2>&1 &'

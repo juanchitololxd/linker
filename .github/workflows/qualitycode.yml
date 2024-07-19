@@ -42,7 +42,6 @@ jobs:
   tests:
     needs: setup
     runs-on: ubuntu-latest
-    needs: setup
     steps:
     - name: Run Tests
       run: go test -v ./...
@@ -50,6 +49,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [build, tests]
+    steps:
+    - uses: actions/checkout@v4
     - name: Transfer files via SCP
       run: |
         mkdir -p ~/.ssh

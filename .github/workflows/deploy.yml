@@ -32,6 +32,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [build, tests]
+    steps:
+    - uses: actions/checkout@v4
     - name: Transfer files via SCP
       run: |
         mkdir -p ~/.ssh

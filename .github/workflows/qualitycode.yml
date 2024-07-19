@@ -1,11 +1,13 @@
 # This workflow will build a golang project and run tests
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
-name: Go
+name: Validate Quality Code
 
 on:
+  pull_request:
+    branches: [ "main" ]
   push:
-    branches: [ "main", "features/pipeline" ]
+    branches: [ "features/pipeline" ]
 
 jobs:
   setup:
@@ -21,20 +23,12 @@ jobs:
     - name: Setup environment variables
       env:
         FEATURE_FLAG: ${{ secrets.FEATURE_FLAG }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        DB_PASSWD: ${{ secrets.DB_PASSWD }}
+        DB_USERNAME: ${{ secrets.DEV_DB_USERNAME }}
+        DB_PASSWD: ${{ secrets.DEV_DB_PASSWD }}
       run: |
         echo ${{ secrets.ENV_DEPLOY }}
         chmod +x ./scripts/setup-project-linux.sh
-        ./scripts/setup-project-linux.sh ${{ secrets.ENV_DEPLOY }}
-        
-        if [ "$GO_ENV" = "dev" ]; then
-          echo "DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}" >> $GITHUB_ENV
-          echo "DB_PASSWD=${{ secrets.DEV_DB_PASSWD }}" >> $GITHUB_ENV
-        fi
-        
-        echo $DB_USERNAME
-        echo $DB_PASSWD
+        ./scripts/setup-project-linux.sh dev
         sed -i 's/{{DB_USERNAME}}/'"$DB_USERNAME"'/g' .env
         sed -i 's/{{DB_PASSWD}}/'"$DB_PASSWD"'/g' .env
 

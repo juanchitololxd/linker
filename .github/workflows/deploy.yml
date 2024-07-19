@@ -23,7 +23,7 @@ jobs:
         DB_PASSWD: ${{ secrets.DB_PASSWD }}
       run: |
         chmod +x ./scripts/setup-project-linux.sh
-        ./scripts/setup-project-linux.sh dev
+        ./scripts/setup-project-linux.sh prod
         sed -i 's/{{DB_USERNAME}}/'"$DB_USERNAME"'/g' .env
         sed -i 's/{{DB_PASSWD}}/'"$DB_PASSWD"'/g' .env
     - name: Transfer files via SCP to prod

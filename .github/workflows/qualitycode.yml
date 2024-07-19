@@ -6,8 +6,6 @@ name: Validate Quality Code
 on:
   pull_request:
     branches: [ "main" ]
-  push:
-    branches: [ "features/pipeline" ]
 
 jobs:
   setup:
@@ -36,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup
     steps:
+    - uses: actions/checkout@v4
     - name: Build
       run: go build -v ./cmd/api
 
@@ -43,6 +42,7 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v4
     - name: Run Tests
       run: go test -v ./...
 

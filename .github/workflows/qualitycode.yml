@@ -29,6 +29,11 @@ jobs:
         ./scripts/setup-project-linux.sh dev
         sed -i 's/{{DB_USERNAME}}/'"$DB_USERNAME"'/g' .env
         sed -i 's/{{DB_PASSWD}}/'"$DB_PASSWD"'/g' .env
+    - name: Upload .env file
+      uses: actions/upload-artifact@v3
+      with:
+        name: env-file
+        path: .env
 
   build:
     runs-on: ubuntu-latest
@@ -43,6 +48,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Download .env file
+      uses: actions/download-artifact@v3
+      with:
+        name: env-file
+        path: .
     - name: Run Tests
       run: go test -v ./...
 
@@ -51,6 +61,11 @@ jobs:
     needs: [build, tests]
     steps:
     - uses: actions/checkout@v4
+    - name: Download .env file
+      uses: actions/download-artifact@v3
+      with:
+        name: env-file
+        path: .
     - name: Transfer files via SCP
       run: |
         mkdir -p ~/.ssh

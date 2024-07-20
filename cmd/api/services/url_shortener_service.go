@@ -69,3 +69,7 @@ func generateShortURL() string {
 
 	return string(b)
 }
+
+func (s *urlShortenerService) GetPing() string {
+	return "pong"
+}

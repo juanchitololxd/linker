@@ -68,6 +68,11 @@ func main() {
 	// Endpoint para exponer las métricas
 	http.Handle("/metrics", promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 
+	// Endpoint para comprobar servicios funcionales
+	//http.Handle("/ping", instrumentedHandler("/ping", http.HandlerFunc(application.URLHandler.GetPing)))
+	http.Handle("/ping", instrumentedHandler("/ping", "pong"))
+
+
 	// Iniciar el servidor HTTP
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

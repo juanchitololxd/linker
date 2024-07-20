@@ -1,50 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic HTML Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
-        }
-        main {
-            margin: 20px 0;
-        }
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+    <title>Postmortem: Error de Implementación de Pricing</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <header>
-        <h1>Welcome to My Basic HTML Page</h1>
-    </header>
+<div class="sidebar">
+    <h2>Secciones</h2>
+    <ul>
+        <li><a href="#" data-section="summary">📋 Resumen</a></li>
+        <li><a href="#" data-section="leadup">📝 Leadup</a></li>
+        <li><a href="#" data-section="fault">🔍 Fault</a></li>
+        <li><a href="#" data-section="impact">🥏 Impact</a></li>
+        <li><a href="#" data-section="detection">👁 Detection</a></li>
+        <li><a href="#" data-section="response">💬 Response</a></li>
+        <li><a href="#" data-section="recovery">🔄 Recovery</a></li>
+        <li><a href="#" data-section="timeline">⏲ Timeline</a></li>
+        <li><a href="#" data-section="blameless">🌱 Blameless root cause</a></li>
+        <li><a href="#" data-section="backlog">✅ Backlog check</a></li>
+        <li><a href="#" data-section="related">🗃 Related incidents</a></li>
+        <li><a href="#" data-section="lessons">🤔 Lessons learned</a></li>
+        <li><a href="#" data-section="followup">✍ Follow-up tasks</a></li>
+    </ul>
+</div>
 
-    <main>
-        <p>This is a simple HTML page. You can use this as a starting point for your web projects.</p>
-        <p>Add more content here to customize your page.</p>
-    </main>
+<div class="content">
+    <h1 id="summary">Postmortem: Error de Implementación de Pricing</h1>
 
-    <footer>
-        <p>&copy; 2024 Your Name. All rights reserved.</p>
-    </footer>
+    <div class="section" id="summary-section">
+        <h2>📋 Resumen</h2>
+        <ul>
+            <li><strong>Incidente:</strong> Error de Implementación de Pricing en el flujo de pagos.</li>
+            <li><strong>Link to Jira Ticket:</strong> <a href="#">JIRA-1234</a></li>
+            <li><strong>Postmortem owner:</strong> sebastian garcia </li>
+            <li><strong>Participantes:</strong> Sebastian Garcia, Diego Murcia, Juan Pablo Daza, Juan Pablo Fonseca</li>
+            <li><strong>Servicios afectados / Flujos afectados:</strong> Sistema de pagos, Flujos de pricing</li>
+        </ul>
+        <p><strong>Executive summary:</strong> Un cambio en la configuración de pricing causó un error que resultó en cobros incorrectos a los usuarios. Esto impactó tanto a usuarios internos como externos, generando un total de 500.000 dólares en reembolsos y 300 casos de soporte. La solución incluyó la reversión del cambio y la implementación de nuevas medidas de monitoreo.</p>
+    </div>
 
+    <div class="section" id="leadup-section">
+        <h2>📝 Leadup</h2>
+        <ul>
+            <li>01/07/2024 - Se realiza un cambio en la configuración de pricing.</li>
+            <li>02/07/2024 - El nuevo flujo de pricing entra en producción.</li>
+            <li>05/07/2024 - Se detecta un aumento en los casos de soporte relacionados con cobros incorrectos.</li>
+        </ul>
+    </div>
+
+    <div class="section" id="fault-section">
+        <h2>🔍 Fault</h2>
+        <p>La raíz del problema fue un error en la nueva configuración de pricing que no consideraba ciertos atributos necesarios para la correcta aplicación de las reglas de cobro.</p>
+    </div>
+
+    <div class="section" id="impact-section">
+        <h2>🥏 Impact</h2>
+        <p>El error afectó a los usuarios que realizaron pagos entre el 02/07/2024 y el 05/07/2024. Se generaron 300 casos de soporte y un total de 500.000 dólares en reembolsos.</p>
+    </div>
+
+    <div class="section" id="detection-section">
+        <h2>👁 Detection</h2>
+        <ul>
+            <li>05/07/2024 10:00 AM - El equipo de soporte reporta un aumento significativo en los casos de cobros incorrectos.</li>
+            <li>05/07/2024 11:00 AM - Se convoca a una war room para investigar el problema.</li>
+            <li>05/07/2024 01:00 PM - Se identifica el cambio de pricing como la causa del problema.</li>
+        </ul>
+        <p>Para mejorar la detección temprana, se implementarán monitores de cambios de pricing en Datadog.</p>
+    </div>
+
+    <div class="section" id="response-section">
+        <h2>💬 Response</h2>
+        <ul>
+            <li>05/07/2024 11:00 AM - Se convoca la war room.</li>
+            <li>05/07/2024 12:00 PM - Se identifica el cambio de pricing como la causa del problema.</li>
+            <li>05/07/2024 02:00 PM - Se revierte el cambio de pricing.</li>
+            <li>06/07/2024 09:00 AM - Se implementan monitores adicionales para cambios de pricing.</li>
+        </ul>
+    </div>
+
+    <div class="section" id="recovery-section">
+        <h2>🔄 Recovery</h2>
+        <ul>
+            <li>05/07/2024 02:00 PM - Se revierte el cambio de pricing.</li>
+            <li>06/07/2024 10:00 AM - Se completa el proceso de reembolso a los usuarios afectados.</li>
+            <li>06/07/2024 12:00 PM - El incidente se declara resuelto.</li>
+        </ul>
+        <p>Para mejorar el tiempo de mitigación, se sugiere realizar pruebas más exhaustivas antes de desplegar cambios críticos.</p>
+    </div>
+
+    <div class="section" id="timeline-section">
+        <h2>⏲ Timeline</h2>
+        <ul>
+            <li><strong>01/07/2024</strong> 09:00 AM - Cambio en la configuración de pricing.</li>
+            <li><strong>02/07/2024</strong> 10:00 AM - Nuevo flujo de pricing en producción.</li>
+            <li><strong>05/07/2024</strong> 10:00 AM - Aumento de casos de soporte detectado.</li>
+            <li><strong>05/07/2024</strong> 11:00 AM - Convocatoria de war room.</li>
+            <li><strong>05/07/2024</strong> 01:00 PM - Identificación del problema.</li>
+            <li><strong>05/07/2024</strong> 02:00 PM - Reversión del cambio de pricing.</li>
+            <li><strong>06/07/2024</strong> 09:00 AM - Implementación de monitores adicionales.</li>
+            <li><strong>06/07/2024</strong> 12:00 PM - Incidente resuelto.</li>
+        </ul>
+    </div>
+
+    <div class="section" id="blameless-section">
+        <h2>🌱 Blameless root cause</h2>
+        <p>La raíz del problema fue un error en la configuración de pricing que no consideraba ciertos atributos necesarios. Para prevenir incidentes futuros, se recomienda realizar pruebas más exhaustivas y mejorar la comunicación entre los equipos de desarrollo y pricing.</p>
+    </div>
+
+    <div class="section" id="backlog-section">
+        <h2>✅ Backlog check</h2>
+        <ul>
+            <li>Revisión y mejora del proceso de pruebas de cambios en pricing.</li>
+        </ul>
+    </div>
+
+    <div class="section" id="related-section">
+        <h2>🗃 Related incidents</h2>
+        <ul>
+            <li>Incidente similar en 2023 relacionado con cambios de pricing.</li>
+        </ul>
+    </div>
+
+    <div class="section" id="lessons-section">
+        <h2>🤔 Lessons learned</h2>
+        <ul>
+            <li>Realizar pruebas completas antes de desplegar cambios críticos.</li>
+            <li>Mejorar la comunicación y coordinación entre equipos.</li>
+        </ul>
+    </div>
+
+    <div class="section" id="followup-section">
+        <h2>✍ Follow-up tasks</h2>
+        <ul>
+            <li>Implementar pruebas automatizadas para cambios de pricing.</li>
+            <li>Mejorar los monitores de Datadog para detectar cambios en tiempo real.</li>
+        </ul>
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

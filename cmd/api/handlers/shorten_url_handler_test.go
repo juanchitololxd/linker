@@ -14,6 +14,10 @@ type mockURLShortenerService struct {
 	urlMap map[string]string
 }
 
+func (m *mockURLShortenerService) GetPing() string {
+	return "pong"
+}
+
 func (m *mockURLShortenerService) ShortenURL(originalURL string) domain.URLMapping {
 	shortURL := "abc123"
 	m.urlMap[shortURL] = originalURL

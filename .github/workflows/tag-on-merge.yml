@@ -1,0 +1,36 @@
+name: Tag on Merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Bump version and create tag
+      run: |
+        VERSION_FILE=VERSION
+        # Get current version
+        if [ -f $VERSION_FILE ]; then
+          VERSION=$(cat $VERSION_FILE)
+        else
+          VERSION=0.0.0
+        fi
+        # Bump patch version
+        IFS='.' read -r -a VERSION_PARTS <<< "$VERSION"
+        VERSION_PARTS[2]=$((VERSION_PARTS[2] + 1))
+        NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.${VERSION_PARTS[2]}"
+        # Update version file
+        echo $NEW_VERSION > $VERSION_FILE
+        # Commit and tag
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git commit -am "Bump version to $NEW_VERSION"
+        git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
+        git push origin main --tags

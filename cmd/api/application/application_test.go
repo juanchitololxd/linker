@@ -3,6 +3,7 @@ package application
 import (
 	_ "embed"
 	"encoding/json"
+	"os"
 	"testing"
 	"url-shortener/cmd/api/domain"
 	"url-shortener/cmd/api/handlers"
@@ -53,4 +54,15 @@ func TestURLServiceInitialization(t *testing.T) {
 	if len(result.ShortURL) == 0 {
 		t.Errorf("expected ShortURL to be non-empty")
 	}
+}
+
+
+func TestEnvVariablesExist(t *testing.T) {
+    envVars := []string{"DB_HOST", "DB_USERNAME", "DB_PASSWD", "BASE_URL"}
+
+    for _, envVar := range envVars {
+        if value := os.Getenv(envVar); value == "" {
+            t.Errorf("La variable de entorno %s no está definida", envVar)
+        }
+    }
 }

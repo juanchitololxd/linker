@@ -2,3 +2,4 @@ id_rsa
 *.exe
 *.idea
 url-shortener
+**/.env

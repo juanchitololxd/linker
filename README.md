@@ -45,7 +45,12 @@ go mod tidy
 Este comando se usa para limpiar y actualizar dependencias.
 
 ```
-go run main.go
+.\scripts\setup-project-linux.sh dev
+```
+Este comando para configurar el environment para que el proyecto tenga configuradas las variables de entorno (deberás pedir a soporte@linker1.com credenciales para la BD y sobreeescribirlas en el archivo .env del root). Si usas windows deberás usar `.\scripts\setup-project-windows.ps1 -RUN_ENV dev`
+
+```
+go run ./cmd/api/main.go
 ```
 
 Este comando ejecutara linker.
@@ -122,3 +127,10 @@ con la finalidad de que este sea revisado por los integrantes del proyecto y pue
 
 También tenemos a disposicion otra herrameinta de GitHub, [GitHub Codespaces](https://github.com/features/codespaces) la cual permite crear ambientes ailados de desarrollo
 con la finalidad de que cualquier persona desde el navegador pueda realizar cambios y aportar a nuestro proyecto.
+
+
+## Change Log
+### v 1.0.1
+- Configuración de variables de entorno 
+- Uso de secrets en el pipeline para reemplazar datos privados como usuario y contraseña de la BD.
+- Scripts que generan el archivo .env (se debe de ejecutar el correspondiente antes de correr el proyecto o de hacer tests)

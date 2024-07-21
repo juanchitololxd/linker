@@ -69,8 +69,8 @@ func main() {
 	http.Handle("/metrics", promhttp.HandlerFor(registry, promhttp.HandlerOpts{}))
 
 	// Endpoint para comprobar servicios funcionales
-	//http.Handle("/ping", instrumentedHandler("/ping", http.HandlerFunc(application.URLHandler.GetPing)))
-	http.Handle("/ping", instrumentedHandler("/ping", "pong"))
+	http.Handle("/ping", instrumentedHandler("/ping", http.HandlerFunc(application.URLHandler.GetPing)))
+	//http.Handle("/ping", instrumentedHandler("/ping", "pong"))
 
 
 	// Iniciar el servidor HTTP

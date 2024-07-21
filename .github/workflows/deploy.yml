@@ -44,7 +44,7 @@ jobs:
       run: |
         BASE_URL=$(grep -oP '(?<=BASE_URL=).*' .env)
         response=$(curl -s "${BASE_URL%/}/ping")
-        if [ "$response" != "pong" ]; then
+        if [ "$response" != '"pong"' ]; then
           echo "Validation failed: expected 'pong' but got '$response'"
           exit 1
         fi

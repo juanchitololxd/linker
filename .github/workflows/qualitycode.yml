@@ -93,7 +93,7 @@ jobs:
         ssh -i ~/.ssh/id_rsa -N -L 8080:localhost:8080 ubuntu@149.130.183.133 -vvv &
         sleep 5 # Give SSH tunnel some time to establish
         response=$(curl -s localhost:8080/ping)
-        if [ "$response" != "pong" ]; then
+        if [ "$response" != '"pong"' ]; then
           echo "Validation failed: expected 'pong' but got '$response'"
           exit 1
         fi

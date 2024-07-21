@@ -26,15 +26,26 @@ jobs:
         ./scripts/setup-project-linux.sh prod
         sed -i 's/{{DB_USERNAME}}/'"$DB_USERNAME"'/g' .env
         sed -i 's/{{DB_PASSWD}}/'"$DB_PASSWD"'/g' .env
-    - name: Transfer files via SCP to prod
+    - name: set up ssh
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY_JP }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H 149.130.163.38 >> ~/.ssh/known_hosts
+    - name: Transfer files via SCP to prod
+      run: |
         scp -i ~/.ssh/id_rsa ./scripts/kill-current-process.sh ubuntu@149.130.163.38:~/scripts/kill-current-process.sh
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.163.38 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh && mkdir -p linker-prod'
         scp -i ~/.ssh/id_rsa api ubuntu@149.130.163.38:/home/ubuntu/linker-prod/url-shortener
         scp -i ~/.ssh/id_rsa .env ubuntu@149.130.163.38:/home/ubuntu/linker-prod/.env
         echo "archivos enviados"
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.163.38 'nohup ~/linker-prod/url-shortener > ~/linker-prod/url-shortener.log 2>&1 &'
+    - name: E2E Tests
+      run: |
+        BASE_URL=$(grep -oP '(?<=BASE_URL=).*' .env)
+        response=$(curl -s "${BASE_URL%/}/ping")
+        if [ "$response" != "pong" ]; then
+          echo "Validation failed: expected 'pong' but got '$response'"
+          exit 1
+        fi
+        echo "Validation succeeded: received 'pong'"

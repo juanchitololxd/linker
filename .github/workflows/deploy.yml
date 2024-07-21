@@ -5,12 +5,16 @@ name: Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "features/pipeline" ]
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
     - name: Environment variables prod
       env:
         FEATURE_FLAG: ${{ secrets.FEATURE_FLAG }}

@@ -5,17 +5,12 @@ name: Deploy
 
 on:
   push:
-    branches: [ "main"]
+    branches: [ "main" ]
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Download compiled file
-      uses: actions/download-artifact@v3
-      with:
-        name: compiled
-        path: .
     - name: Environment variables prod
       env:
         FEATURE_FLAG: ${{ secrets.FEATURE_FLAG }}
@@ -26,6 +21,8 @@ jobs:
         ./scripts/setup-project-linux.sh prod
         sed -i 's/{{DB_USERNAME}}/'"$DB_USERNAME"'/g' .env
         sed -i 's/{{DB_PASSWD}}/'"$DB_PASSWD"'/g' .env
+    - name: Build
+      run: go build -v ./cmd/api
     - name: set up ssh
       run: |
         mkdir -p ~/.ssh
@@ -34,12 +31,12 @@ jobs:
         ssh-keyscan -H 149.130.163.38 >> ~/.ssh/known_hosts
     - name: Transfer files via SCP to prod
       run: |
-        scp -i ~/.ssh/id_rsa ./scripts/kill-current-process.sh ubuntu@149.130.163.38:~/scripts/kill-current-process.sh
-        ssh -i ~/.ssh/id_rsa ubuntu@149.130.163.38 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh && mkdir -p linker-prod'
-        scp -i ~/.ssh/id_rsa api ubuntu@149.130.163.38:/home/ubuntu/linker-prod/url-shortener
-        scp -i ~/.ssh/id_rsa .env ubuntu@149.130.163.38:/home/ubuntu/linker-prod/.env
+        scp -i ~/.ssh/id_rsa ./scripts/kill-current-process.sh opc@149.130.163.38:~/scripts/kill-current-process.sh
+        ssh -i ~/.ssh/id_rsa opc@149.130.163.38 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh && mkdir -p linker-prod'
+        scp -i ~/.ssh/id_rsa api opc@149.130.163.38:/home/opc/linker-prod/url-shortener
+        scp -i ~/.ssh/id_rsa .env opc@149.130.163.38:/home/opc/linker-prod/.env
         echo "archivos enviados"
-        ssh -i ~/.ssh/id_rsa ubuntu@149.130.163.38 'nohup ~/linker-prod/url-shortener > ~/linker-prod/url-shortener.log 2>&1 &'
+        ssh -i ~/.ssh/id_rsa opc@149.130.163.38 'nohup ~/linker-prod/url-shortener > ~/linker-prod/url-shortener.log 2>&1 &'
     - name: E2E Tests
       run: |
         BASE_URL=$(grep -oP '(?<=BASE_URL=).*' .env)

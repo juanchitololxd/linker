@@ -103,7 +103,7 @@ que nos ayudan a automatizar todo el despliegue de linker en nuestro ambiente de
 
 ### Workflow
 
-Nuestro workflow se encarga de compilar el codigo del proyecto y ejecutar las pruebas con la finalidad de probar el correcto funcionamiento del código antes de realizar un despliegue en la nube, el código de este proceso está en el archivo [go.yml](/.github/workflows/go.yml).
+Nuestro workflow se encarga de compilar el codigo del proyecto y ejecutar las pruebas con la finalidad de probar el correcto funcionamiento del código antes de realizar un despliegue en la nube, el código de este proceso está en el archivo [qualitycode.yml](/.github/workflows/qualitycode.yml).
 
 ![](/img/Workflow1.PNG)<br>
 

@@ -28,7 +28,12 @@ experimentar el desarrollo de una aplicación nativa de la nube y el uso de dist
 
 ## Instrucciones y uso
 
-Linker esta desarrollado en varios lenguajes, para su frontend se usa [HTML](https://developer.mozilla.org/es/docs/Web/HTML), [JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript)y como librería [Bootstrap](https://getbootstrap.com). Para su backend, [Go](https://go.dev).
+### Tecnologías usadas
+
+Linker esta desarrollado en varios lenguajes, para su frontend se usa [HTML](https://developer.mozilla.org/es/docs/Web/HTML), [JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript)y como librería [Bootstrap](https://getbootstrap.com). Para su backend, [Go](https://go.dev) y almacena los links que se acortan en una base de datos [MySQL](https://www.mysql.com).
+
+Como parte de la metodologia de trabajo del proyecto se usaron diferentes herramientas para poder lograr los objetivos propuestos. Para los pipelines usamos GitHub Actions,
+impementamos [Prometheus](https://prometheus.io) en la aplicacion para generar metricas y [Grafana](https://grafana.com) para poder visualizarlas.
 
 ### Guia para usar linker de manera remota:
 

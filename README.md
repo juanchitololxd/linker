@@ -109,10 +109,6 @@ entonces se realizara el mismo proceso pero para el ambiente de producción.
 
 Los detalles de este proceso pueden ser vistos en los archivos [quilitycode.yml](./.github/workflows/qualitycode.yml) y [deploy.yml](./.github/workflows/deploy.yml), tambien el proceso esta mas detallado en nuestra wiki, en el apartado de la [Guía de uso](https://github.com/co-eiv-devsecops/linker-1-app/wiki/Guia-de-uso).
 
-Una vez ejecutamos nuestro script, entonces ahora enviamos el ejecutable url-shortener, y lo ejecutamos en segundo plano.
-
-Si todo está bien podemos comprobar que [Linker](http://1.unli.ink) funciona.
-
 ## ¿Cómo ayudar en el desarrollo?
 
 Linker está pensado para seguir la estrategia de [trunk based development](https://trunkbaseddevelopment.com) y también el principio de [small batch development](https://dora.dev/capabilities/working-in-small-batches/).

@@ -15,6 +15,7 @@
 - [Instrucciones y uso](#instrucciones-y-uso)
 - [¿Cómo ayudar en el desarrollo?](#cómo-ayudar-en-el-desarrollo)
 - [Postmortem](#postmortem)
+- [Change log](#change-log)
 
 
 ## ¿Qué es linker?
@@ -100,7 +101,7 @@ Para poder llegar a desplegar linker tenemos un proceso que detallaremos y expli
 Para empezar, una de las herramientas que vamos a usar es proporcionada por GitHub, esta es [GitHub Actions](https://docs.github.com/en/actions) con la cual podemos crear [workflows](https://docs.github.com/en/actions/using-workflows)
 que nos ayudan a automatizar todo el despliegue de linker en nuestro ambiente de nube.
 
-### Worflow
+### Workflow
 
 Nuestro workflow se encarga de compilar el codigo del proyecto y ejecutar las pruebas con la finalidad de probar el correcto funcionamiento del código antes de realizar un despliegue en la nube, el código de este proceso esta en el archivo [go.yml](/.github/workflows/go.yml).
 
@@ -137,6 +138,11 @@ con la finalidad de que cualquier persona desde el navegador pueda realizar camb
 ## Postmortem
 
 Como parte de uno de los ejercicios que trabajamos en clase, realizamos un analisis postmortem de un error en otra apliación, tenemos desplegado como una pagina haciendo uso de GitHub Pages, el analisis se púede ver [aquí](https://co-eiv-devsecops.github.io/linker-1-app/).
+
+## 12 principios
+
+Uno de los objetivos del proyecto es crear una aplicacion que cumpla con la metodologia de los [doce principios](https://12factor.net/es/), con esto en mente
+vamos a desglosar como aplicamos cada principio dentro de Linker, esto esta detallado dentro de nuestra [wiki](https://github.com/co-eiv-devsecops/linker-1-app/wiki/12-Principios)
 
 ## Change Log
 ### v 1.0.1

@@ -14,6 +14,7 @@
 - [¿Qué es linker?](#qué-es-linker)
 - [Instrucciones y uso](#instrucciones-y-uso)
 - [¿Cómo ayudar en el desarrollo?](#cómo-ayudar-en-el-desarrollo)
+- [Postmortem](#postmortem)
 
 
 ## ¿Qué es linker?
@@ -133,6 +134,9 @@ con la finalidad de que este sea revisado por los integrantes del proyecto y pue
 También tenemos a disposicion otra herrameinta de GitHub, [GitHub Codespaces](https://github.com/features/codespaces) la cual permite crear ambientes ailados de desarrollo
 con la finalidad de que cualquier persona desde el navegador pueda realizar cambios y aportar a nuestro proyecto.
 
+## Postmortem
+
+Como parte de uno de los ejercicios que trabajamos en clase, realizamos un analisis postmortem de un error en otra apliación, tenemos desplegado como una pagina haciendo uso de GitHub Pages, el analisis se púede ver [aquí](https://co-eiv-devsecops.github.io/linker-1-app/).
 
 ## Change Log
 ### v 1.0.1

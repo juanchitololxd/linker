@@ -103,21 +103,11 @@ que nos ayudan a automatizar todo el despliegue de linker en nuestro ambiente de
 
 ### Workflow
 
-Nuestro workflow se encarga de compilar el codigo del proyecto y ejecutar las pruebas con la finalidad de probar el correcto funcionamiento del código antes de realizar un despliegue en la nube, el código de este proceso está en el archivo [qualitycode.yml](/.github/workflows/qualitycode.yml).
+Nuestro workflow tiene dos pasos, una vez se hace un pull request hacia la rama main, se verifica la calidad del código, se ejecutan pruebas y se compila para 
+poder evitar problemas con la ejecución, luego de esto de comienza la trasferencia del ejecutable generado hacia nuestra maquina de desarrollo con la finalidad de probar los cambios en un ambiente controlado, y luego de que se comprueba que Linker funciona en el ambiente de desarrollo si se acepta el pull request 
+entonces se realizara el mismo proceso pero para el ambiente de producción.
 
-![](/img/Workflow1.PNG)<br>
-
-Durante este proceso se generó un ejecutable, url-shortener.exe el cual es el resultado del comando go build -v ./... el siguiente paso es enviar ese ejecutable a nuestra maquina virtual.
-
-![](/img/Workflow2.PNG)<br>
-
-Vamos a ver un poco el archivo [go.yml](/.github/workflows/go.yml) para ver qué succede en la transferencia del ejecutable:
-
-![](/img/Workflow3.PNG)<br>
-
-En el archivo podemos ver que usamos nuestra llave para poder establecer la conexión con nuestra máquina virtual, esta llave
-está guardada como un secreto dentro del repositorio de GitHub. Luego de eso, enviamos nuestro [script](/scripts/kill-current-process.sh) el cual se encarga de eliminar cualquier proceso que este usando el puerto :8080 ya que es el que usa linker
-para escuchar las peticiones.
+Los detalles de este proceso pueden ser vistos en los archivos [quilitycode.yml](./.github/workflows/qualitycode.yml) y [deploy.yml](./.github/workflows/deploy.yml), tambien el proceso esta mas detallado en nuestra wiki, en el apartado de la [Guía de uso](https://github.com/co-eiv-devsecops/linker-1-app/wiki/Guia-de-uso).
 
 Una vez ejecutamos nuestro script, entonces ahora enviamos el ejecutable url-shortener, y lo ejecutamos en segundo plano.
 

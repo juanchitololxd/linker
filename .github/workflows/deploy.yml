@@ -28,11 +28,17 @@ jobs:
         chmod +x ./scripts/setup-project-linux.sh
         ./scripts/setup-project-linux.sh prod
         sed -i 's/{{DB_USERNAME}}/'"$DB_USERNAME"'/g' .env
+        echo "DB_USERNAME: $DB_USERNAME"
         sed -i 's/{{DB_PASSWD}}/'"$DB_PASSWD"'/g' .env
+        echo "DB_PASSWD: $DB_PASSWD"
         sed -i 's/{{DB_HOST}}/'"$DB_HOST"'/g' .env
+        echo "DB_HOST: $DB_HOST"
         sed -i 's/{{DB_PORT}}/'"$DB_PORT"'/g' .env
+        echo "DB_PORT: $DB_PORT"
         sed -i 's/{{DB_NAME}}/'"$DB_NAME"'/g' .env
+        echo "DB_NAME: $DB_NAME"
         sed -i 's/{{BASE_URL}}/'"$BASE_URL"'/g' .env
+        echo "BASE_URL: $BASE_URL"
     - name: Build
       run: go build -v ./cmd/api
     - name: set up ssh

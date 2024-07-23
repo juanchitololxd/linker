@@ -28,6 +28,10 @@ func (r *URLRepo) FindByOriginalURL(originalURL string) (domain.URLMapping, erro
 
 	err := r.URLRepository.QueryRow("SELECT urls.original_url, urls.shorten_url FROM urls WHERE original_url = ?", originalURL).Scan(&url.OriginalURL, &url.ShortURL)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return domain.URLMapping{}, nil
+		}
+
 		return domain.URLMapping{}, fmt.Errorf("ERROR: Error al consultar la URL '%v'\n", originalURL)
 	}
 

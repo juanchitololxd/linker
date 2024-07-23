@@ -52,7 +52,7 @@ func main() {
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
-			http.Redirect(w, r, "/static/index.html", http.StatusMovedPermanently)
+			http.Redirect(w, r, "/static/index.html", http.StatusOK)
 			return
 		}
 
@@ -71,7 +71,6 @@ func main() {
 	// Endpoint para comprobar servicios funcionales
 	http.Handle("/ping", instrumentedHandler("/ping", http.HandlerFunc(application.URLHandler.GetPing)))
 	//http.Handle("/ping", instrumentedHandler("/ping", "pong"))
-
 
 	// Iniciar el servidor HTTP
 	log.Fatal(http.ListenAndServe(":8080", nil))

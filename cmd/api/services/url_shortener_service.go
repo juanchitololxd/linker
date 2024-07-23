@@ -24,25 +24,30 @@ func (s *urlShortenerService) ShortenURL(originalURL string) (domain.URLMapping,
 		return urlMap, err
 	}
 
+	baseURL := os.Getenv("BASE_URL")
+
 	if savedURL.OriginalURL != "" && savedURL.ShortURL != "" {
+		saved := baseURL + "/s/" + savedURL.ShortURL
+		savedURL.ShortURL = saved
 		return savedURL, nil
 	}
 
-	baseURL := os.Getenv("BASE_URL")
 	shortURL := generateShortURL()
 	urlMap.OriginalURL = originalURL
-	urlMap.ShortURL = baseURL + "/s/" + shortURL
+	urlMap.ShortURL = shortURL
 
 	err = s.URLRepository.Save(urlMap)
 	if err != nil {
 		return domain.URLMapping{}, err
 	}
 
+	urlMap.ShortURL = baseURL + "/s/" + shortURL
+
 	return urlMap, nil
 }
 
 func (s *urlShortenerService) GetOriginalURL(shortURL string) (string, error) {
-	url, err := s.URLRepository.FindByOriginalURL(shortURL)
+	url, err := s.URLRepository.FindByShortURL(shortURL)
 	if err != nil {
 		return "", err
 	}

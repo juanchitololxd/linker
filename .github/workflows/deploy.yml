@@ -18,8 +18,12 @@ jobs:
     - name: Environment variables prod
       env:
         FEATURE_FLAG: ${{ secrets.FEATURE_FLAG }}
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_NAME: ${{ secrets.DB_NAME }}
         DB_USERNAME: ${{ secrets.DB_USERNAME }}
         DB_PASSWD: ${{ secrets.DB_PASSWD }}
+        BASE_URL: ${{ secrets.BASE_URL }}
       run: |
         chmod +x ./scripts/setup-project-linux.sh
         ./scripts/setup-project-linux.sh prod

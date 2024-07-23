@@ -48,6 +48,7 @@ func (s *urlShortenerService) ShortenURL(originalURL string) (domain.URLMapping,
 
 func (s *urlShortenerService) GetOriginalURL(shortURL string) (string, error) {
 	url, err := s.URLRepository.FindByShortURL(shortURL)
+
 	if err != nil {
 		return "", err
 	}

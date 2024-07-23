@@ -2,6 +2,7 @@ package services
 
 import (
 	"math/rand"
+	"os"
 	"url-shortener/cmd/api/domain"
 )
 
@@ -9,8 +10,10 @@ type urlShortenerService struct {
 	URLRepository URLRepository
 }
 
-func NewURLShortenerService() URLShortenerService {
-	return &urlShortenerService{}
+func NewURLShortenerService(repository URLRepository) URLShortenerService {
+	return &urlShortenerService{
+		URLRepository: repository,
+	}
 }
 
 func (s *urlShortenerService) ShortenURL(originalURL string) (domain.URLMapping, error) {
@@ -25,9 +28,10 @@ func (s *urlShortenerService) ShortenURL(originalURL string) (domain.URLMapping,
 		return savedURL, nil
 	}
 
+	baseURL := os.Getenv("BASE_URL")
 	shortURL := generateShortURL()
 	urlMap.OriginalURL = originalURL
-	urlMap.ShortURL = "http://1.unli.ink/s/" + shortURL
+	urlMap.ShortURL = baseURL + "/s/" + shortURL
 
 	err = s.URLRepository.Save(urlMap)
 	if err != nil {

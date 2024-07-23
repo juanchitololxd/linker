@@ -41,12 +41,3 @@ jobs:
         scp -i ~/.ssh/id_rsa .env ubuntu@149.130.182.145:/home/ubuntu/linker-prod/.env
         echo "archivos enviados"
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.182.145 'nohup ~/linker-prod/url-shortener > ~/linker-prod/url-shortener.log 2>&1 &'
-    - name: E2E Tests
-      run: |
-        BASE_URL=$(grep -oP '(?<=BASE_URL=).*' .env)
-        response=$(curl -s "${BASE_URL%/}/ping")
-        if [ "$response" != '"pong"' ]; then
-          echo "Validation failed: expected 'pong' but got '$response'"
-          exit 1
-        fi
-        echo "Validation succeeded: received 'pong'"

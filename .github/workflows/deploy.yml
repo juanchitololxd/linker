@@ -43,9 +43,9 @@ jobs:
     - name: Transfer files via SCP to prod
       run: |
         scp -i ~/.ssh/id_rsa ./scripts/*.sh ubuntu@149.130.182.145:~/scripts/
-        ssh -i ~/.ssh/id_rsa ubuntu@149.130.182.145 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh && mkdir -p linker-prod'
-        scp -i ~/.ssh/id_rsa api ubuntu@149.130.182.145:/home/ubuntu/linker-prod/url-shortener
-        scp -i ~/.ssh/id_rsa .env ubuntu@149.130.182.145:/home/ubuntu/linker-prod/.env
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.182.145 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh && mkdir -p linker'
+        scp -i ~/.ssh/id_rsa api ubuntu@149.130.182.145:/home/ubuntu/linker/url-shortener
+        scp -i ~/.ssh/id_rsa .env ubuntu@149.130.182.145:/home/ubuntu/linker/.env
         echo "archivos enviados"
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.182.145 'chmod +x ~/scripts/launch-app.sh && ~/scripts/launch-app.sh'
     - name: E2E Tests

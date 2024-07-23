@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd ~/linker-prod
+cd ~/linker
 nohup ./url-shortener > ./url-shortener.log 2>&1 &
 echo "App running in background."

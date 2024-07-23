@@ -3,149 +3,221 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"url-shortener/cmd/api/domain"
 	_ "url-shortener/cmd/api/services"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-type mockURLShortenerService struct {
-	urlMap map[string]string
+// Mocking the URLShortenerService
+type MockURLShortenerService struct {
+	mock.Mock
 }
 
-func (m *mockURLShortenerService) GetPing() string {
-	return "pong"
+func (m *MockURLShortenerService) ShortenURL(originalURL string) (domain.URLMapping, error) {
+	args := m.Called(originalURL)
+	return args.Get(0).(domain.URLMapping), args.Error(1)
 }
 
-func (m *mockURLShortenerService) ShortenURL(originalURL string) domain.URLMapping {
-	shortURL := "abc123"
-	m.urlMap[shortURL] = originalURL
-	return domain.URLMapping{
-		OriginalURL: originalURL,
-		ShortURL:    "http://1.unli.ink/s/" + shortURL,
-	}
+func (m *MockURLShortenerService) GetOriginalURL(shortURL string) (string, error) {
+	args := m.Called(shortURL)
+	return args.String(0), args.Error(1)
 }
 
-func (m *mockURLShortenerService) GetHistory() []domain.URLMapping {
-	history := []domain.URLMapping{}
-	for shortURL, originalURL := range m.urlMap {
-		history = append(history, domain.URLMapping{
-			OriginalURL: originalURL,
-			ShortURL:    "http://1.unli.ink/s/" + shortURL,
-		})
-	}
-	return history
+func (m *MockURLShortenerService) GetHistory() ([]domain.URLMapping, error) {
+	args := m.Called()
+	return args.Get(0).([]domain.URLMapping), args.Error(1)
 }
 
-func (m *mockURLShortenerService) GetOriginalURL(shortURL string) (string, bool) {
-	originalURL, ok := m.urlMap[shortURL]
-	return originalURL, ok
+func (m *MockURLShortenerService) GetPing() string {
+	args := m.Called()
+	return args.String(0)
 }
 
 func TestShortenURLHandler(t *testing.T) {
-	mockService := &mockURLShortenerService{urlMap: make(map[string]string)}
+	mockService := new(MockURLShortenerService)
 	handler := NewURLHandler(mockService)
 
-	t.Run("Valid request", func(t *testing.T) {
-		urlMapping := domain.URLMapping{OriginalURL: "http://example.com"}
-		body, _ := json.Marshal(urlMapping)
-		req, err := http.NewRequest(http.MethodPost, "/shorten", bytes.NewBuffer(body))
-		if err != nil {
-			t.Fatal(err)
-		}
-		rr := httptest.NewRecorder()
-		http.HandlerFunc(handler.ShortenURLHandler).ServeHTTP(rr, req)
+	urlMapping := domain.URLMapping{OriginalURL: "http://example.com"}
+	shortenedURL := domain.URLMapping{OriginalURL: "http://example.com", ShortURL: "abcdef"}
+	mockService.On("ShortenURL", urlMapping.OriginalURL).Return(shortenedURL, nil)
 
-		if status := rr.Code; status != http.StatusOK {
-			t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-		}
+	body, _ := json.Marshal(urlMapping)
+	req := httptest.NewRequest(http.MethodPost, "/shorten", bytes.NewBuffer(body))
+	w := httptest.NewRecorder()
 
-		var got domain.URLMapping
-		if err := json.NewDecoder(rr.Body).Decode(&got); err != nil {
-			t.Errorf("could not decode response: %v", err)
-		}
+	handler.ShortenURLHandler(w, req)
 
-		expected := domain.URLMapping{
-			OriginalURL: "http://example.com",
-			ShortURL:    "http://1.unli.ink/s/abc123",
-		}
+	resp := w.Result()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		if got != expected {
-			t.Errorf("handler returned unexpected body: got %v want %v", got, expected)
-		}
-	})
+	var result domain.URLMapping
+	json.NewDecoder(resp.Body).Decode(&result)
+	assert.Equal(t, shortenedURL, result)
+}
 
-	t.Run("Invalid request method", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/shorten", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		rr := httptest.NewRecorder()
-		http.HandlerFunc(handler.ShortenURLHandler).ServeHTTP(rr, req)
+func TestShortenURLHandler_InvalidMethod(t *testing.T) {
+	mockService := new(MockURLShortenerService)
+	handler := NewURLHandler(mockService)
 
-		if status := rr.Code; status != http.StatusMethodNotAllowed {
-			t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusMethodNotAllowed)
-		}
+	req := httptest.NewRequest(http.MethodGet, "/shorten", nil)
+	w := httptest.NewRecorder()
 
-		expected := "Invalid request method\n"
-		if rr.Body.String() != expected {
-			t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
-		}
-	})
+	handler.ShortenURLHandler(w, req)
 
-	t.Run("Invalid request body", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, "/shorten", bytes.NewBuffer([]byte("invalid body")))
-		if err != nil {
-			t.Fatal(err)
-		}
-		rr := httptest.NewRecorder()
-		http.HandlerFunc(handler.ShortenURLHandler).ServeHTTP(rr, req)
+	resp := w.Result()
+	assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
+}
 
-		if status := rr.Code; status != http.StatusBadRequest {
-			t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
-		}
+func TestShortenURLHandler_InvalidBody(t *testing.T) {
+	mockService := new(MockURLShortenerService)
+	handler := NewURLHandler(mockService)
 
-		expected := "Invalid request body\n"
-		if rr.Body.String() != expected {
-			t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
-		}
-	})
+	req := httptest.NewRequest(http.MethodPost, "/shorten", bytes.NewBuffer([]byte("invalid body")))
+	w := httptest.NewRecorder()
+
+	handler.ShortenURLHandler(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+}
+
+func TestShortenURLHandler_Error(t *testing.T) {
+	mockService := new(MockURLShortenerService)
+	handler := NewURLHandler(mockService)
+
+	urlMapping := domain.URLMapping{OriginalURL: "http://example.com"}
+	mockService.On("ShortenURL", urlMapping.OriginalURL).Return(domain.URLMapping{}, errors.New("service error"))
+
+	body, _ := json.Marshal(urlMapping)
+	req := httptest.NewRequest(http.MethodPost, "/shorten", bytes.NewBuffer(body))
+	w := httptest.NewRecorder()
+
+	handler.ShortenURLHandler(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 }
 
 func TestRedirectHandler(t *testing.T) {
-	mockService := &mockURLShortenerService{urlMap: make(map[string]string)}
+	mockService := new(MockURLShortenerService)
 	handler := NewURLHandler(mockService)
-	mockService.ShortenURL("http://example.com")
 
-	t.Run("Valid short URL", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/s/abc123", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		rr := httptest.NewRecorder()
-		http.HandlerFunc(handler.RedirectHandler).ServeHTTP(rr, req)
+	shortURL := "abcdef"
+	originalURL := "http://example.com"
+	mockService.On("GetOriginalURL", shortURL).Return(originalURL, nil)
 
-		if status := rr.Code; status != http.StatusFound {
-			t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusFound)
-		}
+	req := httptest.NewRequest(http.MethodGet, "/s/"+shortURL, nil)
+	w := httptest.NewRecorder()
 
-		expected := "http://example.com"
-		if location := rr.Header().Get("Location"); location != expected {
-			t.Errorf("handler returned wrong location header: got %v want %v", location, expected)
-		}
-	})
+	handler.RedirectHandler(w, req)
 
-	t.Run("Invalid short URL", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/s/nonexistent", nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		rr := httptest.NewRecorder()
-		http.HandlerFunc(handler.RedirectHandler).ServeHTTP(rr, req)
+	resp := w.Result()
+	assert.Equal(t, http.StatusFound, resp.StatusCode)
+	assert.Equal(t, originalURL, resp.Header.Get("Location"))
+}
 
-		if status := rr.Code; status != http.StatusNotFound {
-			t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusNotFound)
-		}
-	})
+func TestRedirectHandler_Error(t *testing.T) {
+	mockService := new(MockURLShortenerService)
+	handler := NewURLHandler(mockService)
+
+	shortURL := "abcdef"
+	mockService.On("GetOriginalURL", shortURL).Return("", errors.New("service error"))
+
+	req := httptest.NewRequest(http.MethodGet, "/s/"+shortURL, nil)
+	w := httptest.NewRecorder()
+
+	handler.RedirectHandler(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+}
+
+func TestGetHistory(t *testing.T) {
+	mockService := new(MockURLShortenerService)
+	handler := NewURLHandler(mockService)
+
+	history := []domain.URLMapping{
+		{OriginalURL: "http://example1.com", ShortURL: "abc123"},
+		{OriginalURL: "http://example2.com", ShortURL: "def456"},
+	}
+	mockService.On("GetHistory").Return(history, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/history", nil)
+	w := httptest.NewRecorder()
+
+	handler.GetHistory(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	var result []domain.URLMapping
+	json.NewDecoder(resp.Body).Decode(&result)
+	assert.Equal(t, history, result)
+}
+
+func TestGetHistory_InvalidMethod(t *testing.T) {
+	mockService := new(MockURLShortenerService)
+	handler := NewURLHandler(mockService)
+
+	req := httptest.NewRequest(http.MethodPost, "/history", nil)
+	w := httptest.NewRecorder()
+
+	handler.GetHistory(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
+}
+
+func TestGetHistory_Error(t *testing.T) {
+	mockService := new(MockURLShortenerService)
+	handler := NewURLHandler(mockService)
+
+	// Devuelve un slice vacío en lugar de nil
+	mockService.On("GetHistory").Return([]domain.URLMapping{}, errors.New("service error"))
+
+	req := httptest.NewRequest(http.MethodGet, "/history", nil)
+	w := httptest.NewRecorder()
+
+	handler.GetHistory(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+}
+
+func TestGetPing(t *testing.T) {
+	mockService := new(MockURLShortenerService)
+	handler := NewURLHandler(mockService)
+
+	mockService.On("GetPing").Return("pong")
+
+	req := httptest.NewRequest(http.MethodGet, "/ping", nil)
+	w := httptest.NewRecorder()
+
+	handler.GetPing(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	var result string
+	json.NewDecoder(resp.Body).Decode(&result)
+	assert.Equal(t, "pong", result)
+}
+
+func TestGetPing_InvalidMethod(t *testing.T) {
+	mockService := new(MockURLShortenerService)
+	handler := NewURLHandler(mockService)
+
+	req := httptest.NewRequest(http.MethodPost, "/ping", nil)
+	w := httptest.NewRecorder()
+
+	handler.GetPing(w, req)
+
+	resp := w.Result()
+	assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode)
 }

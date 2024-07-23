@@ -3,59 +3,65 @@ package services
 import (
 	"math/rand"
 	"os"
-	"sync"
 	"url-shortener/cmd/api/domain"
 )
 
 type urlShortenerService struct {
-	urlMap map[string]string
-	mutex  sync.Mutex
+	URLRepository URLRepository
 }
 
-func NewURLShortenerService() URLShortenerService {
+func NewURLShortenerService(repository URLRepository) URLShortenerService {
 	return &urlShortenerService{
-		urlMap: make(map[string]string),
+		URLRepository: repository,
 	}
 }
 
-func (s *urlShortenerService) ShortenURL(originalURL string) domain.URLMapping {
+func (s *urlShortenerService) ShortenURL(originalURL string) (domain.URLMapping, error) {
+	var urlMap domain.URLMapping
+
+	savedURL, err := s.URLRepository.FindByOriginalURL(originalURL)
+	if err != nil {
+		return urlMap, err
+	}
+
+	baseURL := os.Getenv("BASE_URL")
+
+	if savedURL.OriginalURL != "" && savedURL.ShortURL != "" {
+		saved := baseURL + "/s/" + savedURL.ShortURL
+		savedURL.ShortURL = saved
+		return savedURL, nil
+	}
+
 	shortURL := generateShortURL()
+	urlMap.OriginalURL = originalURL
+	urlMap.ShortURL = shortURL
 
-	s.mutex.Lock()
-	s.urlMap[shortURL] = originalURL
-	s.mutex.Unlock()
-
-	return domain.URLMapping{
-		OriginalURL: originalURL,
-		ShortURL:    "http://1.unli.ink/s/" + shortURL,
+	err = s.URLRepository.Save(urlMap)
+	if err != nil {
+		return domain.URLMapping{}, err
 	}
+
+	urlMap.ShortURL = baseURL + "/s/" + shortURL
+
+	return urlMap, nil
 }
 
-func (s *urlShortenerService) GetOriginalURL(shortURL string) (string, bool) {
-	s.mutex.Lock()
+func (s *urlShortenerService) GetOriginalURL(shortURL string) (string, error) {
+	url, err := s.URLRepository.FindByShortURL(shortURL)
+	if err != nil {
+		return "", err
+	}
 
-	originalURL, ok := s.urlMap[shortURL]
-
-	s.mutex.Unlock()
-
-	return originalURL, ok
+	return url.OriginalURL, nil
 }
 
-func (s *urlShortenerService) GetHistory() []domain.URLMapping {
-	if os.Getenv("FEATURE_FLAG") == "0" {
-		return nil
+func (s *urlShortenerService) GetHistory() ([]domain.URLMapping, error) {
+	urls, err := s.URLRepository.FindAll()
+	if err != nil {
+		return nil, err
 	}
 
-	urlMappings := make([]domain.URLMapping, 0, len(s.urlMap))
-
-	for shortURL, originalURL := range s.urlMap {
-		urlMappings = append(urlMappings, domain.URLMapping{
-			OriginalURL: originalURL,
-			ShortURL:    shortURL,
-		})
-	}
-
-	return urlMappings
+	return urls, nil
 }
 
 func generateShortURL() string {

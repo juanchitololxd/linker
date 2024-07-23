@@ -31,7 +31,12 @@ func (h *shortenURLHandler) ShortenURLHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	urlMapping = h.service.ShortenURL(urlMapping.OriginalURL)
+	urlMapping, err := h.service.ShortenURL(urlMapping.OriginalURL)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	log.Print("INFO: Shorten URL generated")
 
@@ -41,16 +46,14 @@ func (h *shortenURLHandler) ShortenURLHandler(w http.ResponseWriter, r *http.Req
 
 func (h *shortenURLHandler) RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	shortURL := r.URL.Path[len("/s/"):]
-	originalURL, ok := h.service.GetOriginalURL(shortURL)
-
-	if !ok {
-		log.Println("ERROR: URL not found")
-		http.NotFound(w, r)
+	originalURL, err := h.service.GetOriginalURL(shortURL)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
 	log.Println("INFO: Redirecting to", originalURL)
-
 	http.Redirect(w, r, originalURL, http.StatusFound)
 }
 
@@ -61,10 +64,13 @@ func (h *shortenURLHandler) GetHistory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	urlMapping := h.service.GetHistory()
+	urlMapping, err := h.service.GetHistory()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 
 	log.Print("INFO: History generated")
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(urlMapping)
 }

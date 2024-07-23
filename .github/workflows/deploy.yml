@@ -29,6 +29,9 @@ jobs:
         ./scripts/setup-project-linux.sh prod
         sed -i 's/{{DB_USERNAME}}/'"$DB_USERNAME"'/g' .env
         sed -i 's/{{DB_PASSWD}}/'"$DB_PASSWD"'/g' .env
+        sed -i 's/{{DB_HOST}}/'"$DB_HOST"'/g' .env
+        sed -i 's/{{DB_PORT}}/'"$DB_PORT"'/g' .env
+        sed -i 's/{{DB_NAME}}/'"$DB_NAME"'/g' .env
     - name: Build
       run: go build -v ./cmd/api
     - name: set up ssh
@@ -39,9 +42,19 @@ jobs:
         ssh-keyscan -H 149.130.182.145 >> ~/.ssh/known_hosts
     - name: Transfer files via SCP to prod
       run: |
-        scp -i ~/.ssh/id_rsa ./scripts/kill-current-process.sh ubuntu@149.130.182.145:~/scripts/kill-current-process.sh
-        ssh -i ~/.ssh/id_rsa ubuntu@149.130.182.145 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh && mkdir -p linker-prod'
-        scp -i ~/.ssh/id_rsa api ubuntu@149.130.182.145:/home/ubuntu/linker-prod/url-shortener
-        scp -i ~/.ssh/id_rsa .env ubuntu@149.130.182.145:/home/ubuntu/linker-prod/.env
+        scp -i ~/.ssh/id_rsa ./scripts/*.sh ubuntu@149.130.182.145:~/scripts/
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.182.145 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh && mkdir -p linker'
+        scp -i ~/.ssh/id_rsa api ubuntu@149.130.182.145:/home/ubuntu/linker/url-shortener
+        scp -i ~/.ssh/id_rsa .env ubuntu@149.130.182.145:/home/ubuntu/linker/.env
         echo "archivos enviados"
-        ssh -i ~/.ssh/id_rsa ubuntu@149.130.182.145 'nohup ~/linker-prod/url-shortener > ~/linker-prod/url-shortener.log 2>&1 &'
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.182.145 'chmod +x ~/scripts/launch-app.sh && ~/scripts/launch-app.sh'
+    - name: E2E Tests
+      run: |
+        BASE_URL=$(grep -oP '(?<=BASE_URL=).*' .env)
+        echo "BASE_URL: $BASE_URL"
+        response=$(curl -s "${BASE_URL}/ping")
+        if [ "$response" != '"pong"' ]; then
+          echo "Validation failed: expected 'pong' but got '$response'"
+          exit 1
+        fi
+        echo "Validation succeeded: received 'pong'"

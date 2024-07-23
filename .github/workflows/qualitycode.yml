@@ -24,12 +24,14 @@ jobs:
         DB_NAME: ${{ secrets.DB_NAME }}
         DB_USERNAME: ${{ secrets.DB_USERNAME }}
         DB_PASSWD: ${{ secrets.DB_PASSWD }}
-        BASE_URL: ${{ secrets.BASE_URL }}
       run: |
         chmod +x ./scripts/setup-project-linux.sh
         ./scripts/setup-project-linux.sh dev
         sed -i 's/{{DB_USERNAME}}/'"$DB_USERNAME"'/g' .env
         sed -i 's/{{DB_PASSWD}}/'"$DB_PASSWD"'/g' .env
+        sed -i 's/{{DB_HOST}}/'"$DB_HOST"'/g' .env
+        sed -i 's/{{DB_PORT}}/'"$DB_PORT"'/g' .env
+        sed -i 's/{{DB_NAME}}/'"$DB_NAME"'/g' .env
     - name: Uploading .env file
       uses: actions/upload-artifact@v3
       with:
@@ -86,12 +88,12 @@ jobs:
         ssh-keyscan -H 149.130.183.133 >> ~/.ssh/known_hosts
     - name: Transfer files via SCP
       run: |
-        scp -i ~/.ssh/id_rsa ./scripts/kill-current-process.sh ubuntu@149.130.183.133:~/scripts/kill-current-process.sh
+        scp -i ~/.ssh/id_rsa ./scripts/*.sh ubuntu@149.130.183.133:~/scripts/
         ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'chmod +x ~/scripts/kill-current-process.sh && ~/scripts/kill-current-process.sh && mkdir -p linker'
         scp -i ~/.ssh/id_rsa api ubuntu@149.130.183.133:/home/ubuntu/linker/url-shortener
         scp -i ~/.ssh/id_rsa .env ubuntu@149.130.183.133:/home/ubuntu/linker/.env
         echo "archivos enviados"
-        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'nohup ~/linker/url-shortener > ~/linker/url-shortener.log 2>&1 &'
+        ssh -i ~/.ssh/id_rsa ubuntu@149.130.183.133 'chmod +x ~/scripts/launch-app.sh && ~/scripts/launch-app.sh'
     - name: E2E Tests
       run: |
         ssh -i ~/.ssh/id_rsa -N -L 8080:localhost:8080 ubuntu@149.130.183.133 -vvv &

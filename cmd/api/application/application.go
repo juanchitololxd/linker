@@ -3,6 +3,7 @@ package application
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"url-shortener/cmd/api/handlers"
@@ -12,13 +13,15 @@ import (
 var (
 	URLService services.URLShortenerService
 	URLHandler handlers.URLHandler
+	loadEnv    = godotenv.Load
+	sqlOpen    = sql.Open
 )
 
 func Initialize() {
-	//if err := godotenv.Load(".env"); err != nil {
-	//	log.Fatalf("Error loading .env file")
-	//}
-	//log.Print("Variables de entorno cargadas")
+	if err := loadEnv(".env"); err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+	log.Print("Variables de entorno cargadas")
 
 	// Init Database
 	dbHost := os.Getenv("DB_HOST")
@@ -27,7 +30,7 @@ func Initialize() {
 	dbUser := os.Getenv("DB_USERNAME")
 	dbPassword := os.Getenv("DB_PASSWD")
 
-	db, err := sql.Open("mysql", dbUser+":"+dbPassword+"@tcp("+dbHost+":"+dbPort+")/"+dbName)
+	db, err := sqlOpen("mysql", dbUser+":"+dbPassword+"@tcp("+dbHost+":"+dbPort+")/"+dbName)
 	if err != nil {
 		log.Fatal(err)
 	}
